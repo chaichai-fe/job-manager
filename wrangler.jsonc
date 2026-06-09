@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "job-manager",
+  "compatibility_date": "2025-09-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "observability": {
+    "enabled": true,
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "job-manager-db",
+      "database_id": "0348ce1a-a3d3-431a-abc5-588a175d98a0",
+      "remote": true,
+      "migrations_dir": "drizzle/migrations",
+    },
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "550345a453134edd92acf768fa61d214",
+      "remote": true,
+    },
+  ],
+  "vars": {
+    "BETTER_AUTH_URL": "https://job-manager.2768505574.workers.dev",
+    "BETTER_AUTH_TRUSTED_ORIGINS": "https://job-manager.2768505574.workers.dev",
+  },
+}
