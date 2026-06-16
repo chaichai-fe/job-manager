@@ -14,11 +14,8 @@ export const projects = sqliteTable(
     requirement: text('requirement').notNull(),
     project: text('project').default('').notNull(),
     branch: text('branch').default('').notNull(),
-    status: text('status', {
-      enum: ['todo', 'developing', 'testing', 'deploying', 'done'],
-    })
-      .default('todo')
-      .notNull(),
+    // 状态以 project_statuses.key 为值，状态定义改由接口维护
+    status: text('status').default('todo').notNull(),
     note: text('note').default('').notNull(),
     sortOrder: integer('sort_order').default(0).notNull(),
     createdAt: integer('created_at', { mode: 'timestamp' })
@@ -29,6 +26,31 @@ export const projects = sqliteTable(
       .notNull(),
   },
   (t) => [index('projects_user_idx').on(t.userId)],
+)
+
+/**
+ * 项目状态（看板列）：由接口维护，不在前端硬编码。
+ * key 为状态值（projects.status 引用它），color 为调色板名（前端映射成样式）。
+ */
+export const projectStatuses = sqliteTable(
+  'project_statuses',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text('user_id').notNull(),
+    key: text('key').notNull(),
+    label: text('label').notNull(),
+    color: text('color').default('slate').notNull(),
+    sortOrder: integer('sort_order').default(0).notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .default(sql`(unixepoch())`)
+      .notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+      .default(sql`(unixepoch())`)
+      .notNull(),
+  },
+  (t) => [index('project_statuses_user_idx').on(t.userId)],
 )
 
 /**

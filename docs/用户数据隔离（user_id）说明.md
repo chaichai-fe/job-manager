@@ -6,7 +6,7 @@
 
 ## 1. 前提：所有用户共用同一张表
 
-这是理解隔离的关键前提。本项目的 `projects` / `repo_links` / `account_entries` **不是「每个用户一张表」**，而是**所有用户的数据都堆在同一张表里**，靠 `user_id` 这一列区分谁是谁：
+这是理解隔离的关键前提。本项目的 `projects` / `project_statuses` / `repo_links` / `account_entries` **不是「每个用户一张表」**，而是**所有用户的数据都堆在同一张表里**，靠 `user_id` 这一列区分谁是谁（看板列定义 `project_statuses` 也按用户隔离——每个人有自己的一套状态列）：
 
 | id  | user_id  | requirement | status  |
 | --- | -------- | ----------- | ------- |

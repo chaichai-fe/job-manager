@@ -28,13 +28,15 @@
 
 部署日志关键阶段：
 
-| 日志片段                                                 | 含义                                |
-| -------------------------------------------------------- | ----------------------------------- |
-| `building client environment for production`             | 构建浏览器端资源                    |
-| `building ssr environment for production`                | 构建服务端（SSR）代码               |
+
+| 日志片段                                                     | 含义                        |
+| -------------------------------------------------------- | ------------------------- |
+| `building client environment for production`             | 构建浏览器端资源                  |
+| `building ssr environment for production`                | 构建服务端（SSR）代码              |
 | `Attaching additional modules`                           | 把 server 代码作为模块附加进 Worker |
-| `Found N new or modified static assets to upload`        | 上传 client 静态资源                |
-| `Uploaded job-manager` / `Deployed job-manager triggers` | Worker 脚本上传并上线               |
+| `Found N new or modified static assets to upload`        | 上传 client 静态资源            |
+| `Uploaded job-manager` / `Deployed job-manager triggers` | Worker 脚本上传并上线            |
+
 
 ---
 
@@ -42,18 +44,20 @@
 
 构建会产生两部分产物：
 
-| 产物                                 | 位置           | 去向                                                  |
-| ------------------------------------ | -------------- | ----------------------------------------------------- |
-| **client**（浏览器端）               | `dist/client/` | 作为静态资源上传到 Cloudflare（Workers Assets / CDN） |
-| **server**（SSR + Server Functions） | `dist/server/` | 打包成 Worker 脚本，跑在 Cloudflare Worker 运行时里   |
+
+| 产物                                 | 位置             | 去向                                         |
+| ---------------------------------- | -------------- | ------------------------------------------ |
+| **client**（浏览器端）                   | `dist/client/` | 作为静态资源上传到 Cloudflare（Workers Assets / CDN） |
+| **server**（SSR + Server Functions） | `dist/server/` | 打包成 Worker 脚本，跑在 Cloudflare Worker 运行时里    |
+
 
 分工：
 
 1. **静态资源**（JS/CSS chunks）由 Cloudflare 的 asset 层直接提供，不消耗 Worker 计算。
 2. **Worker 脚本**（server 部分）负责：
-   - 服务端渲染（SSR）首屏 HTML
-   - 处理 Server Functions / API 路由
-   - 访问绑定资源：`env.DB`（D1）、`env.KV`、环境变量
+  - 服务端渲染（SSR）首屏 HTML
+  - 处理 Server Functions / API 路由
+  - 访问绑定资源：`env.DB`（D1）、`env.KV`、环境变量
 
 `wrangler.jsonc` 入口指向 TanStack Start 的服务端入口：
 
@@ -67,14 +71,16 @@
 
 **Worker 不是 Node.js，而是基于 V8 isolate 的另一套运行时。**
 
-| 维度     | Node.js                                           | Cloudflare Worker                                        |
-| -------- | ------------------------------------------------- | -------------------------------------------------------- |
-| 运行单元 | 进程（process），独占内存/事件循环                | V8 **isolate**，多个共享一个进程                         |
-| 冷启动   | 几十~几百 ms                                      | ~5ms（本项目实测 `Worker Startup Time: 16 ms`）          |
-| 部署位置 | 单一/少数服务器或容器                             | 全球边缘节点，请求就近执行                               |
-| 生命周期 | 长驻进程，可持有连接池、定时器、全局状态          | 按请求短暂存活，状态不保证持久                           |
-| 计费     | 按机器时间                                        | 按 CPU 时间（I/O 等待不计费）                            |
-| API      | `fs`/`net`/`http`/`Buffer`/`process` 等 Node 内置 | Web 标准 API（`fetch`/`Request`/`Response`/`crypto` 等） |
+
+| 维度   | Node.js                                        | Cloudflare Worker                                   |
+| ---- | ---------------------------------------------- | --------------------------------------------------- |
+| 运行单元 | 进程（process），独占内存/事件循环                          | V8 **isolate**，多个共享一个进程                             |
+| 冷启动  | 几十~几百 ms                                       | ~5ms（本项目实测 `Worker Startup Time: 16 ms`）            |
+| 部署位置 | 单一/少数服务器或容器                                    | 全球边缘节点，请求就近执行                                       |
+| 生命周期 | 长驻进程，可持有连接池、定时器、全局状态                           | 按请求短暂存活，状态不保证持久                                     |
+| 计费   | 按机器时间                                          | 按 CPU 时间（I/O 等待不计费）                                 |
+| API  | `fs`/`net`/`http`/`Buffer`/`process` 等 Node 内置 | Web 标准 API（`fetch`/`Request`/`Response`/`crypto` 等） |
+
 
 入口写法差异：
 
@@ -185,25 +191,30 @@ async function handler(request) {
 
 ### 对照表
 
-| 维度          | 老框架（Express/Koa）  | 现代框架（TanStack Start/Hono/Remix） |
-| ------------- | ---------------------- | ------------------------------------- |
-| 请求/响应对象 | Node 专有 `req`/`res`  | Web 标准 `Request`/`Response`         |
-| 依赖能力      | Node 私有 API          | WHATWG 标准 API                       |
-| 跨运行时      | ❌ 基本只能 Node       | ✅ Worker/Deno/Bun/Node 通吃          |
-| 适配方式      | 框架本身就是 Node 程序 | 核心不变 + 各运行时一层 adapter       |
-| 心智模型      | "我在写一个 Node 服务" | "我在写一个 `Request→Response` 函数"  |
+
+| 维度      | 老框架（Express/Koa）    | 现代框架（TanStack Start/Hono/Remix） |
+| ------- | ------------------- | ------------------------------- |
+| 请求/响应对象 | Node 专有 `req`/`res` | Web 标准 `Request`/`Response`     |
+| 依赖能力    | Node 私有 API         | WHATWG 标准 API                   |
+| 跨运行时    | ❌ 基本只能 Node         | ✅ Worker/Deno/Bun/Node 通吃       |
+| 适配方式    | 框架本身就是 Node 程序      | 核心不变 + 各运行时一层 adapter           |
+| 心智模型    | "我在写一个 Node 服务"     | "我在写一个 `Request→Response` 函数"   |
+
 
 ---
 
 ## 6. 项目对应关系速查
 
-| 概念                        | 本项目对应                                 |
-| --------------------------- | ------------------------------------------ |
-| 服务端入口（Worker 适配器） | `@tanstack/react-start/server-entry`       |
-| 数据库绑定                  | `env.DB` → D1（`job-manager-db`）          |
-| KV 绑定                     | `env.KV`                                   |
-| Node 兼容                   | `compatibility_flags: ["nodejs_compat"]`   |
-| 依赖兼容层的库              | `better-auth`、`drizzle-orm`               |
-| 线上地址                    | https://job-manager.2768505574.workers.dev |
+
+| 概念                | 本项目对应                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| 服务端入口（Worker 适配器） | `@tanstack/react-start/server-entry`                                                     |
+| 数据库绑定             | `env.DB` → D1（`job-manager-db`）                                                          |
+| KV 绑定             | `env.KV`                                                                                 |
+| Node 兼容           | `compatibility_flags: ["nodejs_compat"]`                                                 |
+| 依赖兼容层的库           | `better-auth`、`drizzle-orm`                                                              |
+| 线上地址              | [https://job-manager.2768505574.workers.dev](https://job-manager.2768505574.workers.dev) |
+
 
 > **总结**：Worker 是轻量、全球分布、按请求执行的 V8 isolate 运行时，天生说 Web 标准「方言」。现代框架基于 `Request/Response` 标准 + `nodejs_compat` 垫片，使服务端代码与运行时解耦，实现「一次编写，到处运行」。
+
