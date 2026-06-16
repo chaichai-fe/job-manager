@@ -94,51 +94,63 @@ type Board = Record<string, Array<ProjectRow> | undefined>
  */
 const PALETTE: Record<string, { className: string; dot: string }> = {
   rose: {
-    className: 'bg-rose-500/15 text-rose-500 border-rose-500/30',
+    className:
+      'bg-rose-500/10 text-rose-700 border-rose-600/30 dark:bg-rose-500/15 dark:text-rose-400 dark:border-rose-500/30',
     dot: 'bg-rose-500',
   },
   sky: {
-    className: 'bg-sky-500/15 text-sky-500 border-sky-500/30',
+    className:
+      'bg-sky-500/10 text-sky-700 border-sky-600/30 dark:bg-sky-500/15 dark:text-sky-400 dark:border-sky-500/30',
     dot: 'bg-sky-500',
   },
   violet: {
-    className: 'bg-violet-500/15 text-violet-500 border-violet-500/30',
+    className:
+      'bg-violet-500/10 text-violet-700 border-violet-600/30 dark:bg-violet-500/15 dark:text-violet-400 dark:border-violet-500/30',
     dot: 'bg-violet-500',
   },
   emerald: {
-    className: 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30',
+    className:
+      'bg-emerald-500/10 text-emerald-700 border-emerald-600/30 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/30',
     dot: 'bg-emerald-500',
   },
   amber: {
-    className: 'bg-amber-500/15 text-amber-500 border-amber-500/30',
+    className:
+      'bg-amber-500/10 text-amber-700 border-amber-600/30 dark:bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/30',
     dot: 'bg-amber-500',
   },
   blue: {
-    className: 'bg-blue-500/15 text-blue-500 border-blue-500/30',
+    className:
+      'bg-blue-500/10 text-blue-700 border-blue-600/30 dark:bg-blue-500/15 dark:text-blue-400 dark:border-blue-500/30',
     dot: 'bg-blue-500',
   },
   pink: {
-    className: 'bg-pink-500/15 text-pink-500 border-pink-500/30',
+    className:
+      'bg-pink-500/10 text-pink-700 border-pink-600/30 dark:bg-pink-500/15 dark:text-pink-400 dark:border-pink-500/30',
     dot: 'bg-pink-500',
   },
   orange: {
-    className: 'bg-orange-500/15 text-orange-500 border-orange-500/30',
+    className:
+      'bg-orange-500/10 text-orange-700 border-orange-600/30 dark:bg-orange-500/15 dark:text-orange-400 dark:border-orange-500/30',
     dot: 'bg-orange-500',
   },
   teal: {
-    className: 'bg-teal-500/15 text-teal-500 border-teal-500/30',
+    className:
+      'bg-teal-500/10 text-teal-700 border-teal-600/30 dark:bg-teal-500/15 dark:text-teal-400 dark:border-teal-500/30',
     dot: 'bg-teal-500',
   },
   cyan: {
-    className: 'bg-cyan-500/15 text-cyan-500 border-cyan-500/30',
+    className:
+      'bg-cyan-500/10 text-cyan-700 border-cyan-600/30 dark:bg-cyan-500/15 dark:text-cyan-400 dark:border-cyan-500/30',
     dot: 'bg-cyan-500',
   },
   fuchsia: {
-    className: 'bg-fuchsia-500/15 text-fuchsia-500 border-fuchsia-500/30',
+    className:
+      'bg-fuchsia-500/10 text-fuchsia-700 border-fuchsia-600/30 dark:bg-fuchsia-500/15 dark:text-fuchsia-400 dark:border-fuchsia-500/30',
     dot: 'bg-fuchsia-500',
   },
   slate: {
-    className: 'bg-slate-500/15 text-slate-400 border-slate-500/30',
+    className:
+      'bg-slate-500/10 text-slate-700 border-slate-600/30 dark:bg-slate-500/15 dark:text-slate-400 dark:border-slate-500/30',
     dot: 'bg-slate-500',
   },
 }
@@ -652,19 +664,23 @@ function Column({
 
   return (
     <div className="flex min-w-0 flex-col">
-      <div className="mb-3 flex items-center gap-2 px-1">
-        <span className={`size-2 rounded-full ${meta.dot}`} />
-        <span className="text-sm font-semibold text-foreground">
+      <div className="mb-3 flex items-center px-1">
+        <span
+          className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold ${meta.className}`}
+        >
+          <span className={`size-2 rounded-full ${meta.dot}`} />
           {meta.label}
-        </span>
-        <span className="rounded-full bg-muted px-2 text-xs text-muted-foreground">
-          {items.length}
+          <span className="rounded-full bg-background/60 px-1.5 text-xs font-medium">
+            {items.length}
+          </span>
         </span>
       </div>
       <div
         ref={setNodeRef}
-        className={`min-h-[120px] flex-1 space-y-3 rounded-2xl p-2 transition-colors ${
-          isOver ? 'bg-muted/60' : 'bg-muted/20'
+        className={`min-h-[120px] flex-1 space-y-3 rounded-2xl border border-border/60 p-2 transition-colors ${
+          isOver
+            ? 'border-primary/40 bg-muted/80'
+            : 'bg-muted/40 dark:bg-muted/30'
         }`}
       >
         <SortableContext
